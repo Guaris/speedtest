@@ -6,78 +6,118 @@
 
 <title>Linode Speedtest</title>
 
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oswald:300,400|Source+Sans+Pro:400,600" type="text/css" media="all" />
+
 <style type="text/css">
+
+	:root {
+		--dark-gray:#32363b;
+		--grass-green:#02b159;
+	}
 	html,body{
-		border:none; padding:0; margin:0;
-		background:#FFFFFF;
-		color:#202020;
+		background-color:white;
+		border:none;
+	  box-sizing:border-box;
+	  color:var(--dark-gray);
+		padding:0;
+		margin:0;
+	}
+	html {
+	  line-height:1.15;
+	  -ms-text-size-adjust:100%;
+	  -webkit-text-size-adjust:100%;
 	}
 	body{
+	  font-size:18px;
+	  font-size:1.125rem;
+	  line-height:1.33333;
+	  font-family:"Source Sans Pro", sans-serif;
+	  font-weight:400;
+	  letter-spacing:0;
+	  overflow:hidden;
 		text-align:center;
-		font-family:"Roboto",sans-serif;
+	  -moz-osx-font-smoothing:grayscale;
+	  -webkit-font-smoothing:antialiased;
 	}
-	h1{
-		color:#404040;
+	*, *:before, *:after {
+	  box-sizing:inherit;
 	}
 	#startStopBtn{
 		display:inline-block;
 		margin:0 auto;
-		color:#6060AA;
-		background-color:rgba(0,0,0,0);
-		border:0.15em solid #6060FF;
+		padding-left:2rem;
+		padding-right:2rem;
+		color:white;
+		background-color:var(--grass-green);
+		border:0.15em solid var(--grass-green);
 		border-radius:0.3em;
 		transition:all 0.3s;
 		box-sizing:border-box;
-		width:8em; height:3em;
+		height:3em;
 		line-height:2.7em;
 		cursor:pointer;
-		box-shadow: 0 0 0 rgba(0,0,0,0.1), inset 0 0 0 rgba(0,0,0,0.1);
+		/*box-shadow:0 0 0 rgba(0,0,0,0.1), inset 0 0 0 rgba(0,0,0,0.1);*/
+		font-weight:600;
 	}
 	#startStopBtn:hover{
-		box-shadow: 0 0 2em rgba(0,0,0,0.1), inset 0 0 1em rgba(0,0,0,0.1);
+		/*box-shadow: 0 0 2em rgba(0,0,0,0.1), inset 0 0 1em rgba(0,0,0,0.1);*/
 	}
 	#startStopBtn.running{
-		background-color:#FF3030;
-		border-color:#FF6060;
-		color:#FFFFFF;
+		background-color:var(--dark-gray);
+		border-color:var(--dark-gray);
+		color:white;
 	}
 	#startStopBtn:before{
-		content:"Start";
+		content:"Start Speed Test";
 	}
 	#startStopBtn.running:before{
 		content:"Abort";
 	}
 	#test{
-		margin-top:2em;
-		margin-bottom:12em;
+		margin-top:2rem;
+		margin-bottom:2rem;
 	}
 	div.testArea{
 		display:inline-block;
 		width:16em;
-		height:12.5em;
+		height:16em;
+		margin:0 2rem;
 		position:relative;
 		box-sizing:border-box;
 	}
 	div.testName{
+		bottom:0;
+		font-size:1rem;
+		font-weight:600;
+		left:0;
 		position:absolute;
-		top:0.1em; left:0;
 		width:100%;
-		font-size:1.4em;
 		z-index:9;
 	}
 	div.meterText{
+		bottom:1.8em;
+	  font-family:"Oswald", sans-serif;
+	  font-size:4em;
+	  font-weight:300;
+		left:0;
+		line-height:1;
 		position:absolute;
-		bottom:1.55em; left:0;
 		width:100%;
-		font-size:2.5em;
 		z-index:9;
 	}
 	div.meterText:empty:before{
 		content:"0.00";
 	}
 	div.unit{
+		bottom:3.5em;
+	  font-family:"Oswald", sans-serif;
+	  font-size:1.5em;
+	  font-weight:400;
+	  letter-spacing:0.5px;
+		left:0;
+		line-height:1;
 		position:absolute;
-		bottom:2em; left:0;
+	  text-transform:uppercase;
 		width:100%;
 		z-index:9;
 	}
@@ -89,14 +129,17 @@
 	div.testGroup{
 		display:inline-block;
 	}
-	@media all and (max-width:65em){
-		body{
-			font-size:1.5vw;
+	#ipArea {
+		margin-top: 2rem;
+	}
+	@media all and (max-width:65em){ /* 1040 px */
+		div.testArea{
+			font-size:1.5384615vw; /* 16 px */
 		}
 	}
-	@media all and (max-width:40em){
-		body{
-			font-size:0.8em;
+	@media all and (max-width:40em){ /* 640 px */
+		div.testArea{
+			font-size:0.8em; /* 12.8 px */
 		}
 		div.testGroup{
 			display:block;
@@ -107,12 +150,12 @@
 </style>
 <script type="text/javascript">
 function I(id){return document.getElementById(id);}
-var meterBk="#E0E0E0";
-var dlColor="#6060AA",
-	ulColor="#309030",
-	pingColor="#AA6060",
-	jitColor="#AA6060";
-var progColor="#EEEEEE";
+var meterBk="#ebecf0"; // ui--input-border
+var dlColor="#02b159", // grass-green
+	ulColor="#02b159", // grass-green
+	pingColor="#02b159", // grass-green
+	jitColor="#02b159"; // grass-green
+var progColor="#0ac9f7"; // sky-blue
 
 //CODE FOR GAUGES
 function drawMeter(c,amount,bk,fg,progress,prog){
@@ -128,17 +171,36 @@ function drawMeter(c,amount,bk,fg,progress,prog){
 	}
 	ctx.beginPath();
 	ctx.strokeStyle=bk;
-	ctx.lineWidth=16*sizScale;
-	ctx.arc(c.width/2,c.height-58*sizScale,c.height/1.8-ctx.lineWidth,-Math.PI*1.1,Math.PI*0.1);
+	ctx.lineCap = "round";
+	ctx.lineWidth=4*sizScale;
+	ctx.arc(
+		c.width/2,
+		c.height/2,// c.height/2-58*sizScale,
+		c.height/2-ctx.lineWidth,//c.height/1.8-ctx.lineWidth,
+		-Math.PI*1.2,
+		Math.PI*0.2
+	);
 	ctx.stroke();
 	ctx.beginPath();
 	ctx.strokeStyle=fg;
-	ctx.lineWidth=16*sizScale;
-	ctx.arc(c.width/2,c.height-58*sizScale,c.height/1.8-ctx.lineWidth,-Math.PI*1.1,amount*Math.PI*1.2-Math.PI*1.1);
+	ctx.lineCap = ( amount > 0 ? "round" : "butt" );
+	ctx.lineWidth=4*sizScale;
+	ctx.arc(
+		c.width/2,
+		c.height/2,// c.height/2-58*sizScale,
+		c.height/2-ctx.lineWidth,//c.height/1.8-ctx.lineWidth,
+		-Math.PI*1.2,
+		amount*Math.PI*1.2-Math.PI*1.2
+	);
 	ctx.stroke();
 	if(typeof progress !== "undefined"){
 		ctx.fillStyle=prog;
-		ctx.fillRect(c.width*0.3,c.height-16*sizScale,c.width*0.4*progress,4*sizScale);
+		ctx.fillRect(
+			c.width*0.3,
+			c.height-28*sizScale,
+			c.width*0.4*progress,
+			4*sizScale
+		);
 	}
 }
 function mbpsToAmount(s){
@@ -220,8 +282,6 @@ function initUI(){
 </script>
 </head>
 <body>
-<h1>HTML5 Speedtest</h1>
-<div id="startStopBtn" onclick="startStop()"></div>
 <div id="test">
 	<div class="testGroup">
 		<div class="testArea">
@@ -236,8 +296,6 @@ function initUI(){
 			<div id="ulText" class="meterText"></div>
 			<div class="unit">Mbps</div>
 		</div>
-	</div>
-	<div class="testGroup">
 		<div class="testArea">
 			<div class="testName">Ping</div>
 			<canvas id="pingMeter" class="meter"></canvas>
@@ -245,22 +303,20 @@ function initUI(){
 			<div class="unit">ms</div>
 		</div>
 
-<!---		
-
-
+<!---
 		<div class="testArea">
 			<div class="testName">Jitter</div>
 			<canvas id="jitMeter" class="meter"></canvas>
 			<div id="jitText" class="meterText"></div>
 			<div class="unit">ms</div>
 		</div>
-
 --->
 	</div>
 	<div id="ipArea">
 		IP Address: <span id="ip"></span>
 	</div>
 </div>
+<div id="startStopBtn" onclick="startStop()"></div>
 <script type="text/javascript">setTimeout(initUI,100);</script>
 </body>
 </html>
